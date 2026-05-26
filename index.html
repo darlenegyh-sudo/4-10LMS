@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 안전한 기본 색상 48강 이상형 월드컵</title>
+    <style>
+        /* 화면이 무조건 나오도록 고안된 순수 CSS 스타일링 */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 상단 제목 바 */
+        .header {
+            text-align: center;
+            padding: 15px;
+            width: 100%;
+            background-color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+
+        h1 { margin: 0; font-size: 24px; color: #333; }
+        #round-info { color: #e67e22; font-weight: bold; font-size: 20px; margin-top: 5px; }
+
+        /* 대결 구역 설정 */
+        .game-container {
+            display: flex;
+            flex: 1;
+            width: 100%;
+            max-width: 1200px;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* 🖼️ 과일 없는 오직 100% 색깔 그림판 카드! */
+        .color-card {
+            flex: 1;
+            height: 85%;
+            background-color: white;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .color-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        /* 카드의 상단: 순수한 색깔 이미지 영역 */
+        .color-picture {
+            width: 100%;
+            flex: 1;
+        }
+
+        /* 카드의 하단: 색깔 이름 영역 */
+        .color-label {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2d3436;
+            border-top: 1px solid #eee;
+        }
+
+        /* 가운데 VS 글자 배지 */
+        .vs-badge {
+            font-size: 32px;
+            font-weight: 900;
+            color: #b2bec3;
+            font-style: italic;
+            background: white;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* 🏆 최종 우승 화면 */
+        #winner-screen {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: white;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .winner-card {
+            width: 350px;
+            height: 450px;
+            border: 8px solid #e67e22;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(230, 126, 34, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .retry-btn {
+            padding: 15px 40px;
+            font-size: 20px;
+            background: #2d3436;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🎨 최애 기본 색상 이상형 월드컵 (48강)</h1>
+        <div id="round-info">준비 중...</div>
+    </div>
+
+    <div class="game-container">
+        <div class="color-card" onclick="select(0)">
+            <div id="left-pic" class="color-picture"></div>
+            <div id="left-name" class="color-label">카드 1</div>
+        </div>
+
+        <div class="vs-badge">VS</div>
+
+        <div class="color-card" onclick="select(1)">
+            <div id="right-pic" class="color-picture"></div>
+            <div id="right-name" class="color-label">카드 2</div>
+        </div>
+    </div>
+
+    <div id="winner-screen">
+        <h1 style="font-size: 40px; margin-bottom: 5px; color: #e67e22;">🏆 최고의 색상 결정! 🏆</h1>
+        <h2 style="font-size: 24px; margin-bottom: 20px; color: #555;">내가 가장 좋아하는 최애 색깔은?</h2>
+        
+        <div class="winner-card">
+            <div id="winner-pic" class="color-picture"></div>
+            <div id="winner-name" class="color-label">우승 색깔</div>
+        </div>
+        
+        <button class="retry-btn" onclick="location.reload()">다시 하기 ↺</button>
+    </div>
+
+    <script>
+        // 빨강, 오렌지를 포함한 풍성하고 완벽한 48가지 기본 계열 색상 데이터
+        const colors = [
+            { name: "선명한 빨강 (Red)", hex: "#FF0000" },
+            { name: "상큼한 오렌지 (Orange)", hex: "#FF8C00" },
+            { name: "눈부신 노랑 (Yellow)", hex: "#FFD700" },
+            { name: "기본 초록 (Green)", hex: "#008000" },
+            { name: "새파란 파랑 (Blue)", hex: "#0000FF" },
+            { name: "신비한 보라 (Purple)", hex: "#800080" },
+            { name: "사랑스러운 분홍 (Pink)", hex: "#FFC0CB" },
+            { name: "맑은 하늘색 (Sky Blue)", hex: "#87CEEB" },
+            { name: "진한 연두 (Lime Green)", hex: "#32CD32" },
+            { name: "깊은 바다 네이비 (Navy)", hex: "#000080" },
+            { name: "부드러운 갈색 (Brown)", hex: "#8B4513" },
+            { name: "진한 청록 (Teal)", hex: "#008080" },
+            { name: "깔끔한 화이트 (White)", hex: "#FFFFFF" },
+            { name: "기본 회색 (Gray)", hex: "#808080" },
+            { name: "멋쟁이 블랙 (Black)", hex: "#000000" },
+            { name: "밝은 자홍 (Magenta)", hex: "#FF00FF" },
+            { name: "진한 빨강 (Dark Red)", hex: "#8B0000" },
+            { name: "부드러운 주황 (Coral)", hex: "#FF7F50" },
+            { name: "연한 노랑 (Khaki)", hex: "#F0E68C" },
+            { name: "올리브 그린 (Olive)", hex: "#808000" },
+            { name: "네온 초록 (Lime)", hex: "#00FF00" },
+            { name: "아쿠아 블루 (Aqua)", hex: "#00FFFF" },
+            { name: "핫 핑크 (Hot Pink)", hex: "#FF69B4" },
+            { name: "연한 주황 (Light Orange)", hex: "#FFA07A" },
+            { name: "인디고 파랑 (Indigo)", hex: "#4B0082" },
+            { name: "부드러운 자두 (Plum)", hex: "#DDA0DD" },
+            { name: "초콜릿 (Chocolate)", hex: "#D2691E" },
+            { name: "인디언 핑크 (Rosy Brown)", hex: "#BC8F8F" },
+            { name: "황금색 (Gold)", hex: "#FFD700" },
+            { name: "포레스트 그린 (Forest)", hex: "#228B22" },
+            { name: "민트 초코 (Mint)", hex: "#AAF0D1" },
+            { name: "차콜 (Dark Gray)", hex: "#A9A9A9" },
+            { name: "체리 레드 (Cherry)", hex: "#DE3163" },
+            { name: "살구 오렌지 (Apricot)", hex: "#FBCEB1" },
+            { name: "황토색 (Ocher)", hex: "#C68E17" },
+            { name: "에메랄드 그린 (Emerald)", hex: "#50C878" },
+            { name: "터키석 청록 (Turquoise)", hex: "#40E0D0" },
+            { name: "딥 블루 (Sapphire)", hex: "#0F52BA" },
+            { name: "라일락 보라 (Lilac)", hex: "#C8A2C8" },
+            { name: "베이지 (Beige)", hex: "#F5F5DC" },
+            { name: "모카 브라운 (Mocha)", hex: "#493D26" },
+            { name: "머드 브라운 (Mud)", hex: "#705335" },
+            { name: "카라멜 (Caramel)", hex: "#C68E17" },
+            { name: "연회색 (Light Gray)", hex: "#D3D3D3" },
+            { name: "와인 버건디 (Wine)", hex: "#722F37" },
+            { name: "바다 청록 (Cyan)", hex: "#00FFFF" },
+            { name: "파스텔 핑크 (Baby Pink)", hex: "#FFD1DC" },
+            { name: "스틸 블루 (Steel Blue)", hex: "#4682B4" }
+        ];
+
+        let currentRound = [];
+        let winners = [];
+        let step = 0;
+
+        function start() {
+            // 완전 안전 셔플 시스템 가동
+            currentRound = colors.sort(() => Math.random() - 0.5);
+            step = 0;
+            render();
+        }
+
+        function render() {
+            const left = currentRound[step];
+            const right = currentRound[step + 1];
+
+            document.getElementById('left-pic').style.backgroundColor = left.hex;
+            document.getElementById('left-name').innerText = left.name;
+
+            document.getElementById('right-pic').style.backgroundColor = right.hex;
+            document.getElementById('right-name').innerText = right.name;
+
+            const info = document.getElementById('round-info');
+            
+            if (currentRound.length === 2) {
+                info.innerText = "🏆 대망의 결승전 🏆";
+            } else if (currentRound.length === 4) {
+                info.innerText = "⭐ 4강전 (" + (step/2 + 1) + "/2) ⭐";
+            } else if (currentRound.length === 8) {
+                info.innerText = "⚡ 8강전 (" + (step/2 + 1) + "/4) ⚡";
+            } else if (currentRound.length === 16) {
+                info.innerText = "🚀 16강전 (" + (step/2 + 1) + "/8) 🚀";
+            } else if (currentRound.length === 32) {
+                info.innerText = "🌟 32강전 (" + (step/2 + 1) + "/16) 🌟";
+            } else {
+                info.innerText = "🔥 48강전 (" + (step/2 + 1) + "/16) 🔥";
+            }
+        }
+
+        function select(choice) {
+            winners.push(currentRound[step + choice]);
+            step += 2;
+
+            let limit = currentRound.length;
+            if (currentRound.length === 48) {
+                limit = 32;
+            }
+
+            if (step >= limit) {
+                if (currentRound.length === 48) {
+                    let seeded = currentRound.slice(32, 48);
+                    currentRound = [...winners, ...seeded];
+                } else {
+                    currentRound = winners;
+                }
+                
+                winners = [];
+                step = 0;
+
+                if (currentRound.length === 1) {
+                    showWinner(currentRound[0]);
+                } else {
+                    render();
+                }
+            } else {
+                render();
+            }
+        }
+
+        function showWinner(finalColor) {
+            document.getElementById('winner-screen').style.display = 'flex';
+            document.getElementById('winner-pic').style.backgroundColor = finalColor.hex;
+            document.getElementById('winner-name').innerText = finalColor.name;
+        }
+
+        // 화면 로딩이 안전하게 완료되면 주사위를 굴립니다!
+        window.onload = start;
+    </script>
+</body>
+</html>
